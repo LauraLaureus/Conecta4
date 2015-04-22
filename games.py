@@ -249,15 +249,103 @@ class TicTacToe(Game):
         n -= 1 # Because we counted move itself twice
         return n >= self.k
 
-class ConnectFour(TicTacToe):
-    """A TicTacToe-like game in which you can only make a move on the bottom
-    row, or in a square directly above an occupied square.  Traditionally
-    played on a 7x6 board and requiring 4 in a row."""
-    
-    def __init__(self, h=7, v=6, k=4):
-        TicTacToe.__init__(self, h, v, k)
 
-    def legal_moves(self, state):
-        "Legal moves are any square not yet taken."
-        return [(x, y) for (x, y) in state.moves
-                if y == 0 or (x, y-1) in state.board]
+#Clase Conecta4______________________________________________
+
+class Conecta4(Game):
+
+    def __init__(self,row=6,column=7,k=4):
+        update(self,row=row,column=column,k=k)
+        moves = [(x, y) for x in range(1, row+1)
+                 for y in range(1, column+1)]
+        legal_moves = [(6,y) for y in range(1, column+1)]
+        self.initial = Struct(to_move='X', utility=0, board={}, moves=moves, legal_moves=legal_moves)
+        
+        
+    def legal_moves(self,state):
+        return state.legal_moves
+
+    def update_legal_moves(self,state,move):
+        #quitar moves de movimientos legales
+        #comprobar que la fila de move sea menor o igual a 0
+        #anadir el movimiento legal
+
+        next_legal_moves = list(state.legal_moves)
+        next_legal_moves.remove(move)
+        next_row = move[0]-1
+        if next_row != 0:
+            #anade a la nueva lista de movimientos legales una tupla
+            #con el moviento legal de la fila superior
+             next_legal_moves.append((move[0]-1,move[1]))
+        return next_legal_moves
+
+    def make_move(self,move,state):
+        move = self.complete_move(move,state)
+        if move not in state.moves:
+            return state
+        if move not in state.legal_moves:
+            return state
+        board= state.board.copy()
+        board[move] = state.to_move
+        moves = list(state.moves)
+        moves.remove(move)
+        
+        legal_moves = self.update_legal_moves(state,move)
+        return Struct(to_move=if_(state.to_move == 'X', 'O', 'X'),
+                      utility=self.compute_utility(board, move, state.to_move),
+                      board=board, moves=moves, legal_moves=legal_moves)
+        
+    def complete_move(self,imove,state):
+        for tuple in state.legal_moves:
+            x,y = tuple
+            if y == imove:
+                return (x,imove)
+
+        return None
+
+    def utility(self,state,player):
+        if player == 'X':
+            return state.utility
+        if player == 'O':
+            return -state.utility
+
+    def terminal_test(self,state):
+         return state.utility != 0 or len(state.moves) == 0
+
+    def display(self,state):
+        board = state.board
+        for x in range(1, self.row+1):
+            for y in range(1, self.column+1):
+                print board.get((x, y), '.'),
+            print
+        for i in range(1,self.column+1):
+            print '-' ,
+        print
+        for i in range(1,self.column+1):
+            print i ,
+        print
+
+    def compute_utility(self,board,move,player):
+        "If X wins with this move, return 1; if O return -1; else return 0."
+        if (self.k_in_row(board, move, player, (0, 1)) or
+                self.k_in_row(board, move, player, (1, 0)) or
+                self.k_in_row(board, move, player, (1, -1)) or
+                self.k_in_row(board, move, player, (1, 1))):
+            return if_(player == 'X', +1, -1)
+        else:
+            return 0
+
+    def k_in_row(self,board,move,player,(delta_x,delta_y)):
+        "Return true if there is a line through move on board for player."
+        x, y = move
+        n = 0 # n is number of moves in row
+        while board.get((x, y)) == player:
+            n += 1
+            x, y = x + delta_x, y + delta_y
+        x, y = move
+        while board.get((x, y)) == player:
+            n += 1
+            x, y = x - delta_x, y - delta_y
+        n -= 1 # Because we counted move itself twice
+        return n >= self.k
+        
