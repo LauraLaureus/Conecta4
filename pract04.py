@@ -26,15 +26,15 @@ while True:
         player = 'X'
     else:
         #------------JUGADOR REAL-----------------------
-        coor_str = raw_input("Movimiento columna: ")
-        coor = str(coor_str).strip()
-        c = int(coor[0])
-        state = game.make_move(c, state)
+        #coor_str = raw_input("Movimiento columna: ")
+        #coor = str(coor_str).strip()
+        #c = int(coor[0])
+        #state = game.make_move(c, state)
 
 
         print "Thinking..."
         #-------------JUGADOR ALEATORIO-----------------
-        #move = games.random_player(game,state)
+        move = games.random_player(game,state)
 
         #--------------JUGADOR AlphaBeta
 
@@ -44,8 +44,8 @@ while True:
         #move = games.minimax_decision(state, game)
         #move = games.alphabeta_full_search(state, game)
 
-        #x,y = move
-        #state = game.make_move(y,state)
+        x, y = move
+        state = game.make_move(y,state)
         player = 'O'
     print "-------------------"
     if game.terminal_test(state):

@@ -21,8 +21,8 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
             if v >= beta:
                 return v
             alpha = max(alpha, v)
-        print 'MAX toma el valor', #Comentable
-        print v #Comentable
+        #print 'MAX toma el valor', #Comentable
+        #print v #Comentable
         return v
 
     def min_value(state, alpha, beta, depth):
@@ -34,8 +34,8 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
             if v <= alpha:
                 return v
             beta = min(beta, v)
-        print 'MIN toma el valor',#Comentable
-        print v #Comentable
+        #print 'MIN toma el valor',#Comentable
+        #print v #Comentable
         return v
 
     # Body of alphabeta_search starts here:
@@ -81,7 +81,7 @@ def alphabeta_player5(game, state):
     return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.heuristicaSimplita)
 
 def alphabeta_player6(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.h_contable)
+    return alphabeta_search(state=state, game=game, d=1, cutoff_test=None, eval_fn=heuristic.h_contable)
 
 def play_game(game, *players):
     "Play an n-person, move-alternating game."
@@ -134,8 +134,9 @@ class Game:
 
     def successors(self, state):
         "Return a list of legal (move, state) pairs."
-        return [(move, self.make_move(move, state))
-                for move in self.legal_moves(state)]
+        #return [(move, self.make_move(move, state))
+        #        for move in self.legal_moves(state)]
+        abstract
 
     def __repr__(self):
         return '<%s>' % self.__class__.__name__
@@ -161,7 +162,7 @@ class Conecta4(Game):
         next_row = move[0] - 1
         if next_row != 0:
             next_legal_moves.append((move[0] - 1, move[1]))
-        #    next_legal_moves.sort( key=self.take_column)
+            next_legal_moves.sort( key=self.take_column)
         return next_legal_moves
 
     def take_column(self,tuple):
@@ -240,3 +241,8 @@ class Conecta4(Game):
 
     def currentBoard(self):
         return board
+
+    def successors(self, state):
+        "Return a list of legal (move, state) pairs."
+        return [(move, self.make_move(move[1], state))
+                for move in self.legal_moves(state)]

@@ -193,12 +193,12 @@ def h_contable(state):
     h = 0
     copy = list(state.legal_moves)
     firsts=(copy[0],copy[1],copy[2])
-    for tuple in state.first:
+    for tuple in firsts:
         for row_prima in range(tuple[0]+1,7):
             if state.board.get((row_prima,tuple[1])) == state.to_move:
                 h+=1
-    seconds=list(copy[3],copy[4],copy[5])
-    for tuple in state.seconds:
+    seconds=(copy[3],copy[4],copy[5])
+    for tuple in seconds:
         for row_prima in range(tuple[0]+1,7):
             if state.board.get((row_prima,tuple[1])) == state.to_move:
                 h+=1000
