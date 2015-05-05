@@ -1,13 +1,3 @@
-# class HeuristicManager:
-
-#heuristicCollection = [heuristic, heuristicNew]
-#index = 0
-
-
-#def getHeuristic(self):
-
-#   toGive = self.heuristicCollection[self.index%len(self.heuristicCollection)]
-#    self.heuristicCollection.remove(self.index)
 
 
 def heuristic(state):

@@ -89,7 +89,7 @@ def play_game(game, *players):
     while True:
         for player in players:
             move = player(game, state)
-            print player, move
+            print player, move #Ojo con los cambios del make_move
             state = game.make_move(move, state)
             if game.terminal_test(state):
                 print game.display(state)
@@ -150,6 +150,7 @@ class Conecta4(Game):
         #moves = [(x, y) for x in range(1, row + 1)
                 # for y in range(1, column + 1)]
         legal_moves = [(6, y) for y in range(1, column + 1)]
+        self.winner = None
         self.initial = Struct(to_move='X', utility=0, board={}, legal_moves=legal_moves)
 
 
@@ -199,8 +200,16 @@ class Conecta4(Game):
             return -state.utility
 
     def terminal_test(self, state):
+        if state.utility != 0 or len(state.legal_moves) == 0:
+            if state.utility > 0:
+                self.winner = 'X'
+            elif state.utility < 0:
+                self.winner = 'O'
+            else:
+                self.winner = '-'
+
         return state.utility != 0 or len(state.legal_moves) == 0
-               #or len(state.moves) == 0
+
 
     def display(self, state):
         board = state.board
