@@ -4,7 +4,11 @@
 from utils import *
 import random
 import heuristic
-
+import heuristic3
+import neighbourheuristic
+import heuristic2
+import heuristicKInRow
+import heuristicprueba
 
 def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
     """Search game to determine best action; use alpha-beta pruning.
@@ -15,27 +19,35 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
     def max_value(state, alpha, beta, depth):
         if cutoff_test(state, depth):
             return eval_fn(state)
+            #p = eval_fn(state)
+            #game.display(state)
+            #print p
+            #return p
         v = -infinity
         for (a, s) in game.successors(state):
             v = max(v, min_value(s, alpha, beta, depth + 1))
             if v >= beta:
                 return v
             alpha = max(alpha, v)
-        #print 'MAX toma el valor', #Comentable
-        #print v #Comentable
+        # print 'MAX toma el valor', #Comentable
+        # print v #Comentable
         return v
 
     def min_value(state, alpha, beta, depth):
         if cutoff_test(state, depth):
             return eval_fn(state)
+            #p = eval_fn(state)
+            #game.display(state)
+            #print p
+            #return p
         v = infinity
         for (a, s) in game.successors(state):
             v = min(v, max_value(s, alpha, beta, depth + 1))
             if v <= alpha:
                 return v
             beta = min(beta, v)
-        #print 'MIN toma el valor',#Comentable
-        #print v #Comentable
+        # print 'MIN toma el valor',#Comentable
+        # print v #Comentable
         return v
 
     # Body of alphabeta_search starts here:
@@ -43,9 +55,14 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
     cutoff_test = (cutoff_test or
                    (lambda state, depth: depth > d or game.terminal_test(state)))
     eval_fn = eval_fn or (lambda state: game.utility(state, player))
+
+    succ = game.successors(state)
+    for item in succ:
+        f= lambda((a,s)): min_value(s,-infinity,infinity,0)
+        print f(item)
     action, state = argmax(game.successors(state),
                            lambda ((a, s)): min_value(s, -infinity, infinity, 0))
-    #print 'Se toma una desicion', #Comentable
+    # print 'Se toma una desicion', #Comentable
     return action
 
 
@@ -54,7 +71,7 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
 
 def query_player(game, state):
     "Make a move by querying standard input."
-    #game.display(state)
+    # game.display(state)
     return num_or_str(raw_input('Your move? '))
 
 
@@ -74,14 +91,47 @@ def alphabeta_player2(game, state):
 def alphabeta_player3(game, state):
     return alphabeta_search(state, game, 4, None, heuristic.heuristicaJessica1)
 
-def alphabeta_player4(game, state):
-    return alphabeta_search(state, game, 4, None, heuristic.heuristicaSimplita)
+
+# player 4 elminado por ser copiar de player 3
 
 def alphabeta_player5(game, state):
     return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.heuristicaSimplita)
 
-def alphabeta_player6(game, state):
-    return alphabeta_search(state=state, game=game, d=1, cutoff_test=None, eval_fn=heuristic.h_contable)
+
+# player 6 eliminado por errores de la heuristica
+
+def alphabeta_player7(game, state):
+    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.heuristicElevado4)
+
+
+def alphabeta_player8(game, state):
+    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.controladora)
+
+
+def alphabeta_player9(game, state):
+    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.ponderada)
+
+
+def alphabeta_player10(game, state):
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristic2.neoHeuristic)
+
+def alphabeta_player11(game, state):
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristic3.neoHeuristic)
+
+def alphabeta_player12(game, state):
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=neighbourheuristic.heuristic)
+
+def alphabeta_player13(game, state):
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristic3.heuristic)
+
+def alphabeta_player14(game, state):
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristicKInRow.heuristic)
+
+def alphabeta_player15(game, state):
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristicprueba.heuristic)
+
+def alphabeta_player16(game, state):
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristicprueba.sum_heuristics)
 
 def play_game(game, *players):
     "Play an n-person, move-alternating game."
@@ -89,7 +139,7 @@ def play_game(game, *players):
     while True:
         for player in players:
             move = player(game, state)
-            print player, move #Ojo con los cambios del make_move
+            print player, move  #Ojo con los cambios del make_move
             state = game.make_move(move, state)
             if game.terminal_test(state):
                 print game.display(state)
@@ -148,7 +198,7 @@ class Conecta4(Game):
     def __init__(self, row=6, column=7, k=4):
         update(self, row=row, column=column, k=k)
         #moves = [(x, y) for x in range(1, row + 1)
-                # for y in range(1, column + 1)]
+        # for y in range(1, column + 1)]
         legal_moves = [(6, y) for y in range(1, column + 1)]
         self.winner = None
         self.initial = Struct(to_move='X', utility=0, board={}, legal_moves=legal_moves)
@@ -163,10 +213,10 @@ class Conecta4(Game):
         next_row = move[0] - 1
         if next_row != 0:
             next_legal_moves.append((move[0] - 1, move[1]))
-            next_legal_moves.sort( key=self.take_column)
+            next_legal_moves.sort(key=self.take_column)
         return next_legal_moves
 
-    def take_column(self,tuple):
+    def take_column(self, tuple):
         return tuple[1]
 
     def make_move(self, move, state):
@@ -183,7 +233,7 @@ class Conecta4(Game):
         legal_moves = self.update_legal_moves(state, move)
         return Struct(to_move=if_(state.to_move == 'X', 'O', 'X'),
                       utility=self.compute_utility(board, move, state.to_move),
-                      board=board,  legal_moves=legal_moves)
+                      board=board, legal_moves=legal_moves)
 
     def complete_move(self, imove, state):
         for tuple in state.legal_moves:
@@ -230,7 +280,7 @@ class Conecta4(Game):
                 self.k_in_row(board, move, player, (1, 0)) or
                 self.k_in_row(board, move, player, (1, -1)) or
                 self.k_in_row(board, move, player, (1, 1))):
-            return if_(player == 'X', +1, -1)
+            return if_(player == 'X', +infinity, -infinity)
         else:
             return 0
 
