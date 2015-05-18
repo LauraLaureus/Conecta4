@@ -18,9 +18,9 @@ class JugadorPorNiveles:
         if dificultad == 0 :
             self.jugador = query_player
         elif dificultad == 1:
-            self.jugador = alphabeta_player2
-        elif dificultad == 2:
             self.jugador = alphabeta_player3
+        elif dificultad == 2:
+            self.jugador = alphabeta_player9
         else:
             self.jugador = alphabeta_player15
 
