@@ -46,8 +46,10 @@ def heuristic(state):
     # hx = heuristicplayer(state,'X')
     #ho = heuristicplayer(state,'O')
     #return max(hx,ho)
-    if state.utility != 0:
+    if state.utility != 0 and state.to_move == 'X':
         return state.utility
+    if state.utility != 0 and state.to_move == 'O':
+        return -state.utility
     hp = heuristicplayer(state, state.to_move)
     return hp
 
@@ -148,7 +150,7 @@ def sum_heuristics(state):
         return -state.utility
 
 
-    h = 0  # h+=heuristic(state)
+    h = 0
 
     #crear listas
 
@@ -173,23 +175,8 @@ def sum_heuristics(state):
     #llamar a patrones
 
     for collection in lista_de_listas:
-        #print len(collection)
         if len(collection) > 3:
             h += patterns(state.to_move, collection)
-            #print h
-    #if h >= 1008000:
-    #    return h*10
-
-    #player = 'O'
-    #if state.to_move == 'O':
-    #    player = 'X'
-
-    #h_adversario=0
-    #for collection in lista_de_listas:
-    #    h_adversario += patterns(player,collection)
-    #    if h_adversario >=600:
-    #        h= h_adversario*(-1)
-    #        break
 
 
     return h

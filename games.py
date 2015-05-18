@@ -4,12 +4,13 @@
 from utils import *
 import simplita
 import random
-import heuristic
-import heuristic3
-import neighbourheuristic
-import heuristic2
-import heuristicKInRow
-import heuristicprueba
+import patrones
+import simplita
+import vecinos
+import otrasHeuristicas
+import otrasHeuristicas2
+import otrasHeuristicas3
+import otrasHeuristicas4
 
 class JugadorPorNiveles:
 
@@ -17,14 +18,14 @@ class JugadorPorNiveles:
         if dificultad == 0 :
             self.jugador = query_player
         elif dificultad == 1:
-            self.jugador = alphabeta_player5
+            self.jugador = alphabeta_player2
         elif dificultad == 2:
-            self.jugador = alphabeta_player9
+            self.jugador = alphabeta_player3
         else:
-            self.jugador = alphabeta_player16
+            self.jugador = alphabeta_player15
 
     def juega(self, game, state):
-        return self.jugador(game,state)
+        return self.jugador(game,state)[1]
 
 def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
     """Search game to determine best action; use alpha-beta pruning.
@@ -97,15 +98,15 @@ def random_player(game, state):
 
 
 def alphabeta_player1(game, state):
-    return alphabeta_search(state, game, 4, None, heuristic.heuristic)
+    return alphabeta_search(state, game, 4, None, otrasHeuristicas.cuentaMisFichas)
 
 
 def alphabeta_player2(game, state):
-    return alphabeta_search(state, game, 4, None, heuristic.heuristicNew)
+    return alphabeta_search(state, game, 4, None, otrasHeuristicas.miraloTodo)
 
 
 def alphabeta_player3(game, state):
-    return alphabeta_search(state, game, 4, None, heuristic.heuristicaJessica1)
+    return alphabeta_search(state, game, 4, None, otrasHeuristicas.heuristicaJessica1)
 
 
 # player 4 elminado por ser copiar de player 3
@@ -117,37 +118,36 @@ def alphabeta_player5(game, state):
 # player 6 eliminado por errores de la heuristica1
 
 def alphabeta_player7(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.heuristicElevado4)
+    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=otrasHeuristicas.heuristicElevado4)
 
 
 def alphabeta_player8(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.controladora)
+    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=otrasHeuristicas.controladora)
 
 
 def alphabeta_player9(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.ponderada)
+    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=otrasHeuristicas.ponderada)
 
 
 def alphabeta_player10(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristic2.neoHeuristic)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=otrasHeuristicas2.neoHeuristic)
 
-def alphabeta_player11(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristic3.neoHeuristic)
+#player 11 eliminado porque llamaba a la misma heuristica que alphabeta player 10
 
 def alphabeta_player12(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=neighbourheuristic.heuristic)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=vecinos.heuristic)
 
 def alphabeta_player13(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristic3.heuristic)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=otrasHeuristicas3.heuristic)
 
 def alphabeta_player14(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristicKInRow.heuristic)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=otrasHeuristicas4.heuristic)
 
 def alphabeta_player15(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristicprueba.heuristic)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.heuristic)
 
 def alphabeta_player16(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=heuristicprueba.sum_heuristics)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.sum_heuristics)
 
 def play_game(game, *players):
     "Play an n-person, move-alternating game."

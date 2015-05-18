@@ -1,4 +1,8 @@
 def neoHeuristic(state):
+    if state.utility !=0 and state.to_move == 'X':
+        return state.utility
+    elif state.utility != 0 and state.to_move== 'O':
+        return  -state.utility
     r = 7
     for tuple in state.legal_moves:
         if tuple[0] < r:

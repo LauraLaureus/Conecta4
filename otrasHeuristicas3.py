@@ -64,6 +64,10 @@ def neoHeuristic(state):
     return h-i
 
 def heuristic(state):
+    if state.utility !=0 and state.to_move == 'X':
+        return state.utility
+    elif state.utility != 0 and state.to_move== 'O':
+        return  -state.utility
     h=10
     i=5
     nx=0

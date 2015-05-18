@@ -33,6 +33,10 @@ def vecinoUnitario(state,current):
 
 def heuristic(state):
     #buscar vecinos de movimientos legales
+    if state.utility !=0 and state.to_move == 'X':
+        return state.utility
+    elif state.utility != 0 and state.to_move== 'O':
+        return  -state.utility
 
     h=50
     i=50
@@ -44,10 +48,10 @@ def heuristic(state):
     amigos = comunidadDeVecinos.count(state.to_move)
     total = len(comunidadDeVecinos)
 
-    h*=amigos/total+1
-    i*=(total-amigos)/total+1
+    h*=amigos/(total+1)
+    i*=(total-amigos)/(total+1)
 
 
-    return max(h,i)/min(h,i)
+    return max(h,i)/(min(h,i)+1)
 
 

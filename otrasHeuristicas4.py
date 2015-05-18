@@ -34,6 +34,10 @@ def k_in_row(state, (delta_x, delta_y)):
 
 def heuristic(state):
     "If X wins with this move, return 1; if O return -1; else return 0."
+    if state.utility !=0 and state.to_move == 'X':
+        return state.utility
+    elif state.utility != 0 and state.to_move== 'O':
+        return  -state.utility
     h=0
     h+=k_in_row(state, (0, 1))
     h+=k_in_row(state, (1, 0))

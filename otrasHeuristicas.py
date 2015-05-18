@@ -1,7 +1,10 @@
-from _ast import mod
 
+def cuentaMisFichas(state):
+    if state.utility != 0 and state.to_move == 'X':
+        return state.utility
+    if state.utility != 0 and state.to_move == 'O':
+        return -state.utility
 
-def heuristic(state):
     board = state.board
     h = 0
     for x in range(1, 7):
@@ -11,7 +14,12 @@ def heuristic(state):
     return h
 
 
-def heuristicNew(state):
+def miraloTodo(state):
+    if state.utility != 0 and state.to_move == 'X':
+        return state.utility
+    if state.utility != 0 and state.to_move == 'O':
+        return -state.utility
+
     board = state.board
     h = 0
     for row in range(1, 7):
@@ -60,10 +68,7 @@ def heuristicNew(state):
 
     return h
 
-
-# Para la heuristica 3
-
-def patatata(lista, state):
+def soloSumoCuandoHayCuatroEnRayaEnLaListaQueMePasas(lista, state):
     h = 0
     for i in range(0, len(lista) - 3):
         x = 4
@@ -73,6 +78,10 @@ def patatata(lista, state):
         if x == 0:
             h += 1
     return h
+
+
+
+
 
 
 def dar_h(lista, state):
@@ -172,7 +181,12 @@ def h_diagonales2(state):
     return h
 
 
+
 def heuristicaJessica1(state):
+    if state.utility != 0 and state.to_move == 'X':
+        return state.utility
+    if state.utility != 0 and state.to_move == 'O':
+        return -state.utility
     h = 0
     h += h_filas(state)
     h += h_columnas(state)
@@ -181,20 +195,6 @@ def heuristicaJessica1(state):
     return h
 
 
-def heuristicaSimplita(state):
-    h = 0
-    for tuple in state.legal_moves:
-        weight = 10
-        if tuple[0] == 6:
-            h += 5
-            continue
-        for row_prima in range(tuple[0], 6):
-            if state.board.get((row_prima + 1, tuple[1])) != state.to_move:
-                break
-            h += weight
-            weight += 10
-
-    return h
 
 
 def heuristicElevado4(state):
@@ -261,7 +261,15 @@ def heuristicElevado4(state):
     return h
 
 
+
+
 def controladora(state):
+
+    if state.utility !=0 and state.to_move == 'X':
+        return state.utility
+    elif state.utility != 0 and state.to_move== 'O':
+        return  -state.utility
+
     #Maximo de la fila de movimientos legales
     row = 7
     for tuple in state.legal_moves:
@@ -303,6 +311,11 @@ def controladora(state):
 
 
 def ponderada(state):
+    if state.utility !=0 and state.to_move == 'X':
+        return state.utility
+    elif state.utility != 0 and state.to_move== 'O':
+        return  -state.utility
+
     row = 7
     for tuple in state.legal_moves:
         if tuple[0] < row:
