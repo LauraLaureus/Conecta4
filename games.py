@@ -2,6 +2,7 @@
 
 """
 from utils import *
+import simplita
 import random
 import heuristic
 import heuristic3
@@ -9,6 +10,21 @@ import neighbourheuristic
 import heuristic2
 import heuristicKInRow
 import heuristicprueba
+
+class JugadorPorNiveles:
+
+    def __init__(self,dificultad):
+        if dificultad == 0 :
+            self.jugador = query_player
+        elif dificultad == 1:
+            self.jugador = alphabeta_player5
+        elif dificultad == 2:
+            self.jugador = alphabeta_player9
+        else:
+            self.jugador = alphabeta_player16
+
+    def juega(self, game, state):
+        return self.jugador(game,state)
 
 def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
     """Search game to determine best action; use alpha-beta pruning.
@@ -72,7 +88,7 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
 def query_player(game, state):
     "Make a move by querying standard input."
     # game.display(state)
-    return num_or_str(raw_input('Your move? '))
+    return num_or_str(raw_input('Columna? '))
 
 
 def random_player(game, state):
@@ -95,10 +111,10 @@ def alphabeta_player3(game, state):
 # player 4 elminado por ser copiar de player 3
 
 def alphabeta_player5(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.heuristicaSimplita)
+    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=simplita.heuristica)
 
 
-# player 6 eliminado por errores de la heuristica
+# player 6 eliminado por errores de la heuristica1
 
 def alphabeta_player7(game, state):
     return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=heuristic.heuristicElevado4)
@@ -200,7 +216,7 @@ class Conecta4(Game):
         #moves = [(x, y) for x in range(1, row + 1)
         # for y in range(1, column + 1)]
         legal_moves = [(6, y) for y in range(1, column + 1)]
-        self.winner = None
+        #self.winner = None
         self.initial = Struct(to_move='X', utility=0, board={}, legal_moves=legal_moves)
 
 
@@ -250,13 +266,13 @@ class Conecta4(Game):
             return -state.utility
 
     def terminal_test(self, state):
-        if state.utility != 0 or len(state.legal_moves) == 0:
-            if state.utility > 0:
-                self.winner = 'X'
-            elif state.utility < 0:
-                self.winner = 'O'
-            else:
-                self.winner = '-'
+        #if state.utility != 0 or len(state.legal_moves) == 0:
+        #    if state.utility > 0:
+        #        self.winner = 'X'
+        #    elif state.utility < 0:
+        #        self.winner = 'O'
+        #    else:
+        #        self.winner = '-'
 
         return state.utility != 0 or len(state.legal_moves) == 0
 
@@ -280,7 +296,7 @@ class Conecta4(Game):
                 self.k_in_row(board, move, player, (1, 0)) or
                 self.k_in_row(board, move, player, (1, -1)) or
                 self.k_in_row(board, move, player, (1, 1))):
-            return if_(player == 'X', +infinity, -infinity)
+                return if_(player == 'X', +infinity, -infinity)
         else:
             return 0
 
