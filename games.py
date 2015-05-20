@@ -121,10 +121,10 @@ def alphabeta_player14(game, state):
     return alphabeta_search(state=state, game=game, d=2, eval_fn=patrones.heuristic)
 
 def alphabeta_player15(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.heuristic)
+    return alphabeta_search(state=state, game=game, d=3, eval_fn=patrones.heuristic)
 
 def alphabeta_player16(game, state):
-    return alphabeta_search(state=state, game=game, d=6, eval_fn=patrones.heuristic)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.heuristic)
 
 
 def alphabeta_playerAdvisor(game, state,d):
