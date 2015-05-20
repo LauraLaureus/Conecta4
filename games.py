@@ -11,23 +11,38 @@ import otrasHeuristicas
 import otrasHeuristicas2
 import otrasHeuristicas3
 import otrasHeuristicas4
+import time
 
 class JugadorPorNiveles:
-
+    """
+        Permite seleccionar el jugador segun el nivel de dificultad.
+    """
     def __init__(self,dificultad):
+        self.dificultad = dificultad
         if dificultad == 0 :
             self.jugador = query_player
         elif dificultad == 1:
-            self.jugador = alphabeta_player3
-        elif dificultad == 2:
             self.jugador = alphabeta_player9
+        elif dificultad == 2:
+            self.jugador = alphabeta_player10
         else:
-            self.jugador = alphabeta_player15
+            self.jugador = alphabeta_player2
 
     def juega(self, game, state):
-        return self.jugador(game,state)[1]
+        startTime = time.time()
 
-def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
+        devolvible = self.jugador(game,state)[1]
+
+        if self.dificultad !=0:
+            game.info()
+
+        totaltime = time.time() - startTime
+        print "T:", totaltime
+
+        return devolvible
+
+
+def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None,advisor = False):
     """Search game to determine best action; use alpha-beta pruning.
     This version cuts off search and uses an evaluation function."""
 
@@ -36,35 +51,23 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
     def max_value(state, alpha, beta, depth):
         if cutoff_test(state, depth):
             return eval_fn(state)
-            #p = eval_fn(state)
-            #game.display(state)
-            #print p
-            #return p
         v = -infinity
         for (a, s) in game.successors(state):
             v = max(v, min_value(s, alpha, beta, depth + 1))
             if v >= beta:
                 return v
             alpha = max(alpha, v)
-        # print 'MAX toma el valor', #Comentable
-        # print v #Comentable
         return v
 
     def min_value(state, alpha, beta, depth):
         if cutoff_test(state, depth):
             return eval_fn(state)
-            #p = eval_fn(state)
-            #game.display(state)
-            #print p
-            #return p
         v = infinity
         for (a, s) in game.successors(state):
             v = min(v, max_value(s, alpha, beta, depth + 1))
             if v <= alpha:
                 return v
             beta = min(beta, v)
-        # print 'MIN toma el valor',#Comentable
-        # print v #Comentable
         return v
 
     # Body of alphabeta_search starts here:
@@ -73,13 +76,16 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
                    (lambda state, depth: depth > d or game.terminal_test(state)))
     eval_fn = eval_fn or (lambda state: game.utility(state, player))
 
-    succ = game.successors(state)
-    for item in succ:
+    if advisor != True:
+        succ = game.successors(state)
         f= lambda((a,s)): min_value(s,-infinity,infinity,0)
-        print f(item)
+        print "heuristicas --------------------------------"
+        for i in range(0,len(succ)):
+            print succ[i][0][1],"|", f(succ[i])
+        print "--------------------------------------------"
     action, state = argmax(game.successors(state),
                            lambda ((a, s)): min_value(s, -infinity, infinity, 0))
-    # print 'Se toma una desicion', #Comentable
+
     return action
 
 
@@ -89,7 +95,7 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None):
 def query_player(game, state):
     "Make a move by querying standard input."
     # game.display(state)
-    return num_or_str(raw_input('Columna? '))
+    return ( 0 , num_or_str(raw_input('Columna? ')) )
 
 
 def random_player(game, state):
@@ -144,10 +150,13 @@ def alphabeta_player14(game, state):
     return alphabeta_search(state=state, game=game, d=4, eval_fn=otrasHeuristicas4.heuristic)
 
 def alphabeta_player15(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.heuristic)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.heuristic,advisor=True)
 
 def alphabeta_player16(game, state):
     return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.sum_heuristics)
+
+def alphabeta_playerAdvisor(game, state,d):
+    return alphabeta_search(state=state, game=game, d=d, eval_fn=otrasHeuristicas.miraloTodo,advisor=True)
 
 def play_game(game, *players):
     "Play an n-person, move-alternating game."
@@ -213,10 +222,9 @@ class Game:
 class Conecta4(Game):
     def __init__(self, row=6, column=7, k=4):
         update(self, row=row, column=column, k=k)
-        #moves = [(x, y) for x in range(1, row + 1)
-        # for y in range(1, column + 1)]
         legal_moves = [(6, y) for y in range(1, column + 1)]
-        #self.winner = None
+        self.suc = 0
+        self.ter = 0
         self.initial = Struct(to_move='X', utility=0, board={}, legal_moves=legal_moves)
 
 
@@ -266,14 +274,8 @@ class Conecta4(Game):
             return -state.utility
 
     def terminal_test(self, state):
-        #if state.utility != 0 or len(state.legal_moves) == 0:
-        #    if state.utility > 0:
-        #        self.winner = 'X'
-        #    elif state.utility < 0:
-        #        self.winner = 'O'
-        #    else:
-        #        self.winner = '-'
-
+        if state.utility != 0:
+            self.ter +=1
         return state.utility != 0 or len(state.legal_moves) == 0
 
 
@@ -319,5 +321,16 @@ class Conecta4(Game):
 
     def successors(self, state):
         "Return a list of legal (move, state) pairs."
+        self.suc += len(state.legal_moves)
         return [(move, self.make_move(move[1], state))
                 for move in self.legal_moves(state)]
+
+    def info(self):
+        print "Num sucesores", self.suc
+        print "Num nodos terminales",self.ter
+        self.suc = 0
+        self.ter = 0
+
+    def advisor(self,game,state,nivel):
+        move = alphabeta_playerAdvisor(game=game,state=state,d=nivel+1)[1]
+        print "Yo moveria en la columna: ",move
