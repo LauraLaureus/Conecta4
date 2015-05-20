@@ -37,12 +37,9 @@ def heuristic(state):
         return -state.utility
     h = 0
 
-    max_row = state.row
-    for move in state.legal_moves:
-        if move[0] < max_row:
-            max_row = move[0]
 
-    for i in range(max_row, state.row+1):
+
+    for i in range(1, state.row+1):
             h += k_in_row(state, (i, state.k),state.to_move,  (0, 1))
             h += k_in_row(state, (i, state.k),state.to_move,  (1, -1))
             h += k_in_row(state, (i, state.k),state.to_move, (1, 1))
