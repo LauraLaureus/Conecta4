@@ -22,9 +22,9 @@ def miraloTodo(state):
 
     board = state.board
     h = 0
-    for row in range(1, 7):
-        in_row = 4
-        for column in range(1, 8):
+    for row in range(1, state.row+1):
+        in_row = state.k
+        for column in range(1, state.column+1):
             if board.get((row, column)) == state.to_move or (
                             board.get((row, column)) == None and (row, column) in state.legal_moves):
                 in_row -= 1
@@ -33,9 +33,9 @@ def miraloTodo(state):
 
     # por columnas
 
-    for column in range(1, 8):
-        in_row = 4
-        for row in range(1, 7):
+    for column in range(1, state.column+1):
+        in_row = state.k
+        for row in range(1, state.row+1):
             if board.get((row, column)) == state.to_move or (
                             board.get((row, column)) == None and (row, column) in state.legal_moves):
                 in_row -= 1
@@ -44,23 +44,23 @@ def miraloTodo(state):
 
 
     #por diagonales
-    for row in range(1, 4):
-        in_row = 4
-        for column in range(1, 5):
+    for row in range(1, state.row-2):
+        in_row = state.k
+        for column in range(1, state.column-2):
             if board.get((row, column)) == state.to_move or (
                             board.get((row, column)) == None and (row, column) in state.legal_moves):
-                for p in range(1, 4):
+                for p in range(1, state.k):
                     if board.get((row + p, column + p)) == state.to_move or (
                                     board.get((row + p, column + p)) == None and board.get(
                                     (row + p, column + p)) in state.legal_moves):
                         h += 1
 
-    for row in range(1, 4):
-        in_row = 4
-        for column in range(4, 8):
+    for row in range(1, state.row-2):
+        in_row = state.k
+        for column in range(state.column-3, state.column+1):
             if board.get((row, column)) == state.to_move or (
                             board.get((row, column)) == None and (row, column) in state.legal_moves):
-                for p in range(1, 4):
+                for p in range(1, state.k):
                     if board.get((row + p, column - p)) == state.to_move or (
                                     board.get((row + p, column - p)) == None and board.get(
                                     (row + p, column - p)) in state.legal_moves):

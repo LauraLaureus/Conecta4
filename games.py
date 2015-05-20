@@ -12,6 +12,7 @@ import otrasHeuristicas2
 import otrasHeuristicas3
 import otrasHeuristicas4
 import time
+import miraloTodo2
 
 class JugadorPorNiveles:
     """
@@ -22,11 +23,11 @@ class JugadorPorNiveles:
         if dificultad == 0 :
             self.jugador = query_player
         elif dificultad == 1:
-            self.jugador = alphabeta_player9
+            self.jugador = alphabeta_player14
         elif dificultad == 2:
-            self.jugador = alphabeta_player10
+            self.jugador = alphabeta_player15
         else:
-            self.jugador = alphabeta_player2
+            self.jugador = alphabeta_player16
 
     def juega(self, game, state):
         startTime = time.time()
@@ -76,17 +77,24 @@ def alphabeta_search(state, game, d=4, cutoff_test=None, eval_fn=None,advisor = 
                    (lambda state, depth: depth > d or game.terminal_test(state)))
     eval_fn = eval_fn or (lambda state: game.utility(state, player))
 
+
+    '''
+    succ = game.successors(state)
+    f= lambda((a,s)): min_value(s,-infinity,infinity,0)
+
     if advisor != True:
-        succ = game.successors(state)
-        f= lambda((a,s)): min_value(s,-infinity,infinity,0)
         print "heuristicas --------------------------------"
         for i in range(0,len(succ)):
             print succ[i][0][1],"|", f(succ[i])
         print "--------------------------------------------"
+    '''
     action, state = argmax(game.successors(state),
                            lambda ((a, s)): min_value(s, -infinity, infinity, 0))
 
+
+
     return action
+
 
 
 # ______________________________________________________________________________
@@ -102,61 +110,25 @@ def random_player(game, state):
     "A player that chooses a legal move at random."
     return random.choice(game.legal_moves(state))
 
-
-def alphabeta_player1(game, state):
-    return alphabeta_search(state, game, 4, None, otrasHeuristicas.cuentaMisFichas)
-
-
-def alphabeta_player2(game, state):
-    return alphabeta_search(state, game, 4, None, otrasHeuristicas.miraloTodo)
-
-
-def alphabeta_player3(game, state):
-    return alphabeta_search(state, game, 4, None, otrasHeuristicas.heuristicaJessica1)
+#eliminado `por no ser el mejor
 
 
 # player 4 elminado por ser copiar de player 3
 
-def alphabeta_player5(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=simplita.heuristica)
-
-
 # player 6 eliminado por errores de la heuristica1
 
-def alphabeta_player7(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=otrasHeuristicas.heuristicElevado4)
-
-
-def alphabeta_player8(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=otrasHeuristicas.controladora)
-
-
-def alphabeta_player9(game, state):
-    return alphabeta_search(state=state, game=game, d=4, cutoff_test=None, eval_fn=otrasHeuristicas.ponderada)
-
-
-def alphabeta_player10(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=otrasHeuristicas2.neoHeuristic)
-
-#player 11 eliminado porque llamaba a la misma heuristica que alphabeta player 10
-
-def alphabeta_player12(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=vecinos.heuristic)
-
-def alphabeta_player13(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=otrasHeuristicas3.heuristic)
-
 def alphabeta_player14(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=otrasHeuristicas4.heuristic)
+    return alphabeta_search(state=state, game=game, d=2, eval_fn=patrones.heuristic)
 
 def alphabeta_player15(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.heuristic,advisor=True)
+    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.heuristic)
 
 def alphabeta_player16(game, state):
-    return alphabeta_search(state=state, game=game, d=4, eval_fn=patrones.sum_heuristics)
+    return alphabeta_search(state=state, game=game, d=6, eval_fn=patrones.heuristic)
+
 
 def alphabeta_playerAdvisor(game, state,d):
-    return alphabeta_search(state=state, game=game, d=d, eval_fn=otrasHeuristicas.miraloTodo,advisor=True)
+    return alphabeta_search(state=state, game=game, d=d, eval_fn=patrones.heuristic,advisor=True)
 
 def play_game(game, *players):
     "Play an n-person, move-alternating game."
@@ -221,11 +193,19 @@ class Game:
 
 class Conecta4(Game):
     def __init__(self, row=6, column=7, k=4):
+        if k == 5 :
+            row = 8
+            column = 9
+        elif k == 6 :
+            row = 10
+            column = 11
+
         update(self, row=row, column=column, k=k)
-        legal_moves = [(6, y) for y in range(1, column + 1)]
+        legal_moves = [(row, y) for y in range(1, column + 1)]
         self.suc = 0
         self.ter = 0
-        self.initial = Struct(to_move='X', utility=0, board={}, legal_moves=legal_moves)
+        self.winner = None
+        self.initial = Struct(to_move='X', utility=0, board={}, legal_moves=legal_moves, row=row,column=column,k=k)
 
 
     def legal_moves(self, state):
@@ -245,19 +225,15 @@ class Conecta4(Game):
 
     def make_move(self, move, state):
         move = self.complete_move(move, state)
-        #if move not in state.moves:
-        #    return state
         if move not in state.legal_moves:
             return state
         board = state.board.copy()
         board[move] = state.to_move
-        #moves = list(state.moves)
-        #moves.remove(move)
 
         legal_moves = self.update_legal_moves(state, move)
         return Struct(to_move=if_(state.to_move == 'X', 'O', 'X'),
                       utility=self.compute_utility(board, move, state.to_move),
-                      board=board, legal_moves=legal_moves)
+                      board=board, legal_moves=legal_moves,row=state.row,column=state.column,k=state.k)
 
     def complete_move(self, imove, state):
         for tuple in state.legal_moves:
@@ -274,6 +250,13 @@ class Conecta4(Game):
             return -state.utility
 
     def terminal_test(self, state):
+        if state.utility != 0 or len(state.legal_moves) == 0:
+            if state.utility > 0:
+                self.winner = 'X'
+            elif  state.utility < 0:
+                self.winner = 'O'
+            else:
+                self.winner = '-'
         if state.utility != 0:
             self.ter +=1
         return state.utility != 0 or len(state.legal_moves) == 0

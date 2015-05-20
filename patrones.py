@@ -1,29 +1,28 @@
 def k_in_row(state, move, player, (delta_x, delta_y)):
     board = state.board
-    # player = state.to_move
     nm = 0
     nb = 0
     w = 0
     x, y = move
     while board.get((x, y)) == player or board.get((x, y)) == None:
-        if x > 6 or y > 7 or y < 1:
-            break
         if board.get((x, y)) == player:
             nm += 1
             w += 1
         else:
             nb += 1
         x, y = x + delta_x, y + delta_y
+        if x > state.row or y > state.column or y < 1:
+            break
     x, y = move
     while board.get((x, y)) == player or board.get((x, y)) == None:
-        if x < 1 or y < 1 or y > 7:
-            break
         if board.get((x, y)) == player:
             nm += 1
             w += 1
         else:
             nb += 1
         x, y = x - delta_x, y - delta_y
+        if x < 1 or y < 1 or y > state.column:
+            break
     if board.get(move) == player:
         nm -= 1
     if board.get(move) == None:
@@ -31,27 +30,26 @@ def k_in_row(state, move, player, (delta_x, delta_y)):
     return (nm * w) + (0.5 * nb)
 
 
-def heuristicplayer(state, player):
-    h = 0
-    for i in range(1, 7):
-        h += k_in_row(state, (i, 4), player, (0, 1))
-        h += k_in_row(state, (i, 4), player, (1, -1))
-        h += k_in_row(state, (i, 4), player, (1, 1))
-    for j in range(1, 8):
-        h += k_in_row(state, (4, j), player, (1, 0))
-    return h
-
-
 def heuristic(state):
-    # hx = heuristicplayer(state,'X')
-    #ho = heuristicplayer(state,'O')
-    #return max(hx,ho)
     if state.utility != 0 and state.to_move == 'X':
         return state.utility
     if state.utility != 0 and state.to_move == 'O':
         return -state.utility
-    hp = heuristicplayer(state, state.to_move)
-    return hp
+    h = 0
+
+    max_row = state.row
+    for move in state.legal_moves:
+        if move[0] < max_row:
+            max_row = move[0]
+
+    for i in range(max_row, state.row+1):
+            h += k_in_row(state, (i, state.k),state.to_move,  (0, 1))
+            h += k_in_row(state, (i, state.k),state.to_move,  (1, -1))
+            h += k_in_row(state, (i, state.k),state.to_move, (1, 1))
+    for j in range(1, state.column+1):
+            h += k_in_row(state, (state.k, j),state.to_move, (1, 0))
+    return h
+
 
 
 def patterns(jugador, lista):
